@@ -18,4 +18,10 @@ app.delete('/notes/:id', handleDelete);
 app.get('/', handleRoot);
 app.get('/ui', handleUi);
 
-serve(app)
+// Listen on PORT (defaults to 3000)
+const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+
+serve({
+  fetch: (request, env) => app.fetch(request, env),
+  port,
+});

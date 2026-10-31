@@ -1,3 +1,5 @@
-export const handleRoot = (c: any) => {
-  return c.text('Notes API running');
+import { Context } from 'hono';
+
+export const handleRoot = (c: Context) => {
+  return c.json({ text: 'Notes API running' });
 };
