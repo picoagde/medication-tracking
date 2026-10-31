@@ -3,10 +3,7 @@ import { Context } from 'hono';
 import { readJson } from '../helpers';
 
 export const handleUpdate = async (c: Context) => {
-  const id = c.req.param('id');
-  if (!id) {
-    return c.json({ error: 'Id required' }, { status: 400 });
-  }
+  const id = c.req.param('id') as string;
   const { data, error } = await readJson(c);
   if (error) {
     return c.json({ error: 'Invalid JSON body' }, { status: 400 });
@@ -22,6 +19,7 @@ export const handleUpdate = async (c: Context) => {
   if (title === row.title && content === row.content) {
     return c.json(row);
   }
-  db.prepare('UPDATE notes SET title=?, content=?, id=?, createdAt=datetime(\'now\') WHERE id=?').run(title, content, id, id);
+  // createdAt is refreshed on update; the `id` column is deliberately excluded from the SET clause.
+  db.prepare('UPDATE notes SET title=?, content=?, createdAt=datetime(\'now\') WHERE id=?').run(title, content, id);
   return c.json(db.prepare('SELECT id, title, content, createdAt FROM notes WHERE id = ?').get(id) as any);
 };

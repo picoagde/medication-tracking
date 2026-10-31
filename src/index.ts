@@ -18,8 +18,9 @@ app.delete('/notes/:id', handleDelete);
 app.get('/', handleRoot);
 app.get('/ui', handleUi);
 
-// Listen on PORT (defaults to 3000)
-const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+// Listen on PORT (defaults to 3000); ignore non-numeric or invalid values
+const rawPort = Number(process.env.PORT);
+const port = Number.isInteger(rawPort) && rawPort > 0 ? rawPort : 3000;
 
 serve({
   fetch: (request, env) => app.fetch(request, env),

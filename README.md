@@ -56,7 +56,7 @@ curl -X DELETE http://localhost:3000/notes/<id>
 ## Quick Start
 
 ### Prerequisites
-- Node.js (≥14)
+- Node.js ≥ 22.5 (Node 24+ recommended — the project uses `node:sqlite`, which requires a recent Node version)
 - npm or yarn
 
 ### Build the project
@@ -86,6 +86,7 @@ notes-app/
 ├── tsconfig.json  # TypeScript config (outDir: ./dist)
 └── src/
         ├── db.ts      # single instance of the SQLite DB (`notes.db`)
+        ├── helpers.ts # request-body JSON helper (`readJson`)
         ├── index.ts   # Hono app that registers all routes
         └── routes/    # one file per route:
             ├── list.ts     (GET /notes)
