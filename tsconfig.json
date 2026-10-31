@@ -2,6 +2,8 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
     "lib": ["es2022"],
     "strict": true,
     "noUnusedLocals": true,
