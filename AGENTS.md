@@ -39,9 +39,17 @@ The `/ui` route fetches notes from `http://localhost:3000/notes`, so the server 
 notes-app/
 ├── package.json   # dependencies, scripts (build / dev / start)
 ├── tsconfig.json  # TypeScript config (outDir: ./dist)
-└── src/
-    └── index.ts   # Hono app with all routes
-```
+    └── src/
+     ├── db.ts      # single instance of the SQLite DB (`notes.db`)
+     ├── index.ts   # Hono app that registers all routes
+     └── routes/    # one file per route:
+         ├── list.ts     (GET /notes)
+         ├── create.ts   (POST /notes)
+         ├── get.ts      (GET /notes/:id)
+         ├── update.ts   (PATCH /notes/:id)
+         ├── delete.ts   (DELETE /notes/:id)
+         ├── root.ts     (GET /)
+         └── ui.ts       (GET /ui)
 
 ## API Endpoints
 
