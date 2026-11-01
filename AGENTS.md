@@ -37,20 +37,41 @@ The `/ui` route fetches notes from `http://localhost:3000/notes`, so the server 
 
 ```
 notes-app/
-├── package.json   # dependencies, scripts (build / dev / start)
-├── tsconfig.json  # TypeScript config (outDir: ./dist)
+├── package.json   # dependencies, scripts (build / build:web / dev / dev:web / start)
+├── tsconfig.json  # TypeScript config (outDir: ./dist, includes only src/)
+├── vite.config.ts # Vite config for the React UI (root: web/, dev proxy /api -> :3000)
+└── web/           # React + Vite UI (create/edit/delete notes)
+    ├── index.html
     └── src/
-     ├── db.ts      # single instance of the SQLite DB (`notes.db`)
-     ├── helpers.ts # request-body JSON helper (`readJson`)
-     ├── index.ts   # Hono app that registers all routes
-     └── routes/    # one file per route:
-         ├── list.ts     (GET /notes)
-         ├── create.ts   (POST /notes)
-         ├── get.ts      (GET /notes/:id)
-         ├── update.ts   (PATCH /notes/:id)
-         ├── delete.ts   (DELETE /notes/:id)
-         ├── root.ts     (GET /)
-         └── ui.ts       (GET /ui)
+        ├── main.tsx
+        ├── App.tsx
+        ├── App.css
+        ├── api.ts
+        ├── types.ts
+        └── components/
+            └── NoteItem.tsx
+└── src/
+    ├── db.ts      # single instance of the SQLite DB (`notes.db`)
+    ├── helpers.ts # request-body JSON helper (`readJson`)
+    ├── index.ts   # Hono app that registers all routes (serves built UI at /ui)
+    └── routes/    # one file per route:
+        ├── list.ts     (GET /notes)
+        ├── create.ts   (POST /notes)
+        ├── get.ts      (GET /notes/:id)
+        ├── update.ts   (PATCH /notes/:id)
+        ├── delete.ts   (DELETE /notes/:id)
+        ├── root.ts     (GET /)
+        └── ui.ts       (GET /ui -> serves the built React UI)
+
+## React UI
+
+- Created with **React 18 + Vite 6** in `web/`; see `npm run build:web` and
+  `npm run dev:web`.
+- The API server (`/ui` route in `src/index.ts`) serves the built UI from
+  `web/dist` and proxies `/api/notes` to the API so the UI talks to the
+  server same-origin. The POC `src/routes/ui.tsx` was removed.
+- Dev workflow: `npm run build && npm run dev` (API on :3000), plus `npm run dev:web`
+  for the Vite dev server on :5173 (which proxies `/api` to :3000).
 
 ## API Endpoints
 
