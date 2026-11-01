@@ -39,7 +39,10 @@ The `/ui` route fetches notes from `http://localhost:3000/notes`, so the server 
 notes-app/
 ├── package.json   # dependencies, scripts (build / build:web / dev / dev:web / start)
 ├── tsconfig.json  # TypeScript config (outDir: ./dist, includes only src/)
-├── vite.config.ts # Vite config for the React UI (root: web/, dev proxy /api -> :3000)
+├── vite.config.ts # Vite config for the React UI (root: web/, dev proxy /api -> :3000, host 0.0.0.0)
+├── Dockerfile    # Docker build/runtime config for the project
+├── .dockerignore
+├── LICENSE
 └── web/           # React + Vite UI (create/edit/delete notes)
     ├── index.html
     └── src/

@@ -82,20 +82,34 @@ Notes are persisted in a local SQLite file named **`notes.db`**, created automat
 
 ```
 notes-app/
-├── package.json   # dependencies, scripts (build / dev / start)
-├── tsconfig.json  # TypeScript config (outDir: ./dist)
+├── package.json   # dependencies, scripts (build / build:web / dev / dev:web / start)
+├── tsconfig.json  # TypeScript config (strict, outDir ./dist, includes only src/)
+├── vite.config.ts # Vite config for the React UI (root: web/, dev proxy /api -> :3000, host 0.0.0.0)
+├── Dockerfile    # Docker build/runtime config for the project
+├── .dockerignore
+├── LICENSE
+└── web/           # React + Vite UI (create/edit/delete notes)
+    ├── index.html
+    └── src/
+        ├── main.tsx
+        ├── App.tsx
+        ├── App.css
+        ├── api.ts
+        ├── types.ts
+        └── components/
+            └── NoteItem.tsx
 └── src/
-        ├── db.ts      # single instance of the SQLite DB (`notes.db`)
-        ├── helpers.ts # request-body JSON helper (`readJson`)
-        ├── index.ts   # Hono app that registers all routes
-        └── routes/    # one file per route:
-            ├── list.ts     (GET /notes)
-            ├── create.ts   (POST /notes)
-            ├── get.ts      (GET /notes/:id)
-            ├── update.ts   (PATCH /notes/:id)
-            ├── delete.ts   (DELETE /notes/:id)
-            ├── root.ts     (GET /)
-            └── ui.ts       (GET /ui)
+    ├── db.ts      # single instance of the SQLite DB (`notes.db`)
+    ├── helpers.ts # request-body JSON helper (`readJson`)
+    ├── index.ts   # Hono app that registers all routes (serves built UI at /ui)
+    └── routes/    # one file per route:
+        ├── list.ts     (GET /notes)
+        ├── create.ts   (POST /notes)
+        ├── get.ts      (GET /notes/:id)
+        ├── update.ts   (PATCH /notes/:id)
+        ├── delete.ts   (DELETE /notes/:id)
+        ├── root.ts     (GET /)
+        └── ui.ts       (GET /ui -> serves the built React UI)
 ```
 
 ## Notes UI

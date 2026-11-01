@@ -46,6 +46,9 @@ notes-app/
 ├── tsconfig.json  # TypeScript config (strict, outDir ./dist, includes only src/)
 ├── vite.config.ts # Vite config for the React UI (root: web/, dev proxy /api -> :3000, host 0.0.0.0)
 ├── CONTRIBUTING.md
+├── Dockerfile    # Docker build/runtime config for the project
+├── .dockerignore
+├── LICENSE
 └── web/           # React + Vite UI (create/edit/delete notes)
     ├── index.html
     └── src/
