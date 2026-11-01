@@ -1,0 +1,12 @@
+# Dependencies
+node_modules
+
+# Build outputs (built inside the container during the build stage)
+dist
+web/dist
+
+# Local runtime/data files
+notes.db
+
+# Version control
+.git
