@@ -9,8 +9,9 @@ Thanks for your interest in improving notes-app! This project is a lightweight R
 
 ## Getting started
 
+Run these commands from the repository root (the `notes-app` directory):
+
 ```bash
-cd /home/opencode/Projects/notes-app
 npm install
 ```
 
