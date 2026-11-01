@@ -8,6 +8,8 @@ export default defineConfig({
   root: 'web',
   plugins: [react()],
   server: {
+    // Bind to all interfaces so the UI is reachable from outside the VM.
+    host: '0.0.0.0',
     port: 5173,
     proxy: {
       '/api': {
