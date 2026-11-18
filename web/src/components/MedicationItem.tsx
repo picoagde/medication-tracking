@@ -94,6 +94,21 @@ export function MedicationItem({ medication, onChanged }: MedicationItemProps) {
     { label: 'Notes', value: medication.notes },
   ].filter((field) => field.value && field.value.trim() !== '');
 
+  const pillIcon = (
+    <svg
+      className="med-item__icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M18 12a4 4 0 0 0-4-4 4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4Z" />
+    </svg>
+  );
+
   if (editing) {
     return (
       <div className="med-item med-item--editing">
@@ -215,6 +230,7 @@ export function MedicationItem({ medication, onChanged }: MedicationItemProps) {
     <div className={`med-item${medication.taken ? ' med-item--taken' : ''}`}>
       <div className="med-item__text">
         <div className="med-item__name">
+          {pillIcon}
           <span className="med-item__name-text">{medication.name}</span>
           {medication.dosage && <span className="med-item__badge">{medication.dosage}</span>}
         </div>

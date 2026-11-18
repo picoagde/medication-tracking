@@ -56,11 +56,13 @@ export default function App() {
 
   return (
     <div className="app">
+      {/* Header */}
       <header className="app__header">
         <h1>Medications</h1>
         <p className="app__subtitle">Keep your doses on track.</p>
       </header>
 
+      {/* Form section */}
       <section className="app__form">
         <form className="med-form" onSubmit={submitCreate}>
           <div className="med-form__field med-form__field--full">
@@ -141,32 +143,33 @@ export default function App() {
             </div>
           </div>
 
-          <div className="med-form__field med-form__field--full">
-            <label className="med-form__label" htmlFor="med-instructions">
-              Instructions
-            </label>
-            <textarea
-              className="med-form__instructions"
-              id="med-instructions"
-              placeholder="Instructions (e.g. Take with food)"
-              value={draft.instructions}
-              onChange={(e) => setDraft({ ...draft, instructions: e.target.value })}
-              maxLength={500}
-            />
-          </div>
-
-          <div className="med-form__field med-form__field--full">
-            <label className="med-form__label" htmlFor="med-notes">
-              Notes
-            </label>
-            <textarea
-              className="med-form__notes"
-              id="med-notes"
-              placeholder="Notes (optional)"
-              value={draft.notes}
-              onChange={(e) => setDraft({ ...draft, notes: e.target.value })}
-              maxLength={2000}
-            />
+          <div className="med-form__row">
+            <div className="med-form__field">
+              <label className="med-form__label" htmlFor="med-instructions">
+                Instructions
+              </label>
+              <textarea
+                className="med-form__instructions"
+                id="med-instructions"
+                placeholder="Instructions (e.g. Take with food)"
+                value={draft.instructions}
+                onChange={(e) => setDraft({ ...draft, instructions: e.target.value })}
+                maxLength={500}
+              />
+            </div>
+            <div className="med-form__field med-form__field--full">
+              <label className="med-form__label" htmlFor="med-notes">
+                Notes
+              </label>
+              <textarea
+                className="med-form__notes"
+                id="med-notes"
+                placeholder="Notes (optional)"
+                value={draft.notes}
+                onChange={(e) => setDraft({ ...draft, notes: e.target.value })}
+                maxLength={2000}
+              />
+            </div>
           </div>
 
           <div className="med-form__actions">
@@ -179,6 +182,7 @@ export default function App() {
         </form>
       </section>
 
+      {/* List section */}
       <section className="app__list">
         <h2>
           Medications <span className="med-list__count">{medications.length}</span>
