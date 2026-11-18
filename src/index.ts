@@ -6,6 +6,7 @@ import { handleGet } from './routes/get';
 import { handleUpdate } from './routes/update';
 import { handleDelete } from './routes/delete';
 import { handleRoot } from './routes/root';
+import { logRequest } from './logger';
 import path from 'node:path';
 import { extname } from 'node:path';
 import { readFile, stat } from 'node:fs/promises';
@@ -108,11 +109,48 @@ app.get('/ui/*', handleUi);
 // those too when the UI is served at `/ui`.
 app.get('/assets/*', handleUi);
 
+// Wrap the request pipeline so every request — API routes as well as the
+// static UI routes — is logged with method, URL, status code and duration.
+async function logFetch(request: Request, env: any) {
+  const startedAt = process.hrtime.bigint();
+  let response: Response;
+  try {
+    response = await app.fetch(request, env);
+  } catch (err) {
+    // The app threw while handling the request (e.g. an unhandled route
+    // error); log it as an error entry before re-throwing.
+    const durationMs = numberFromHrtime(startedAt);
+    await logRequest({
+      ts: new Date().toISOString(),
+      method: request.method,
+      url: request.url,
+      status: 500,
+      durationMs,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    throw err;
+  }
+  const durationMs = numberFromHrtime(startedAt);
+  await logRequest({
+    ts: new Date().toISOString(),
+    method: request.method,
+    url: request.url,
+    status: response.status,
+    durationMs,
+    remote: request.headers.get('x-forwarded-for') ?? undefined,
+  });
+  return response;
+}
+
+function numberFromHrtime(startedAt: bigint): number {
+  return Number(process.hrtime.bigint() - startedAt) / 1e6;
+}
+
 // Listen on PORT (defaults to 3000); ignore non-numeric or invalid values
 const rawPort = Number(process.env.PORT);
 const port = Number.isInteger(rawPort) && rawPort > 0 ? rawPort : 3000;
 
 serve({
-  fetch: (request, env) => app.fetch(request, env),
+  fetch: logFetch,
   port,
 });
