@@ -1,3 +1,4 @@
+import { AddressInfo } from 'node:net';
 import { mkdir, appendFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -26,6 +27,21 @@ async function ensureLogFile(): Promise<void> {
 // Writes one request log entry to stdout and to `logs/app.log`.
 export async function logRequest(entry: RequestLogEntry): Promise<void> {
   const line = `${JSON.stringify(entry)}\n`;
+  console.log(line);
+  await ensureLogFile();
+  await appendFile(LOG_FILE, line, 'utf8');
+}
+
+// Logs the address/port the API server is listening on (startup info).
+export async function logServerAddress(address: AddressInfo) {
+  const line = `${JSON.stringify({
+    ts: new Date().toISOString(),
+    service: 'notes-app API',
+    listening: true,
+    address: address.address,
+    port: address.port,
+    url: `http://${address.address}:${address.port}`,
+  })}\n`;
   console.log(line);
   await ensureLogFile();
   await appendFile(LOG_FILE, line, 'utf8');

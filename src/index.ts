@@ -6,7 +6,7 @@ import { handleGet } from './routes/get';
 import { handleUpdate } from './routes/update';
 import { handleDelete } from './routes/delete';
 import { handleRoot } from './routes/root';
-import { logRequest } from './logger';
+import { logRequest, logServerAddress } from './logger';
 import path from 'node:path';
 import { extname } from 'node:path';
 import { readFile, stat } from 'node:fs/promises';
@@ -150,7 +150,10 @@ function numberFromHrtime(startedAt: bigint): number {
 const rawPort = Number(process.env.PORT);
 const port = Number.isInteger(rawPort) && rawPort > 0 ? rawPort : 3000;
 
+// Report the address/port the server is listening on (startup info).
 serve({
   fetch: logFetch,
   port,
+}, (serverInfo) => {
+  logServerAddress(serverInfo);
 });
