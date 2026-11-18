@@ -9,3 +9,13 @@ export async function readJson(c: Context): Promise<JsonBody> {
     return { error: true };
   }
 }
+
+// A medication is considered taken only if it was marked on the current day;
+// the taken state naturally expires the next day.
+export function isTakenToday(takenDate: string | null | undefined): boolean {
+  if (!takenDate) {
+    return false;
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  return takenDate.slice(0, 10) === today;
+}

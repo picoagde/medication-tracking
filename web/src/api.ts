@@ -37,6 +37,10 @@ export async function updateMedication(id: string, input: MedicationDraft): Prom
   });
 }
 
+export async function markMedicationTaken(id: string): Promise<Medication> {
+  return request<Medication>(`${BASE}/${id}/taken`, { method: 'POST' });
+}
+
 export async function deleteMedication(id: string): Promise<void> {
   await request<null>(`${BASE}/${id}`, { method: 'DELETE' });
 }

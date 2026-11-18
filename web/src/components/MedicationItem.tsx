@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Medication } from '../types';
-import { deleteMedication, updateMedication } from '../api';
+import { deleteMedication, markMedicationTaken, updateMedication } from '../api';
 
 interface MedicationItemProps {
   medication: Medication;
@@ -17,6 +17,7 @@ export function MedicationItem({ medication, onChanged }: MedicationItemProps) {
   const [instructions, setInstructions] = useState(medication.instructions ?? '');
   const [notes, setNotes] = useState(medication.notes ?? '');
   const [saving, setSaving] = useState(false);
+  const [taking, setTaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const startEdit = () => {
@@ -56,6 +57,19 @@ export function MedicationItem({ medication, onChanged }: MedicationItemProps) {
       setError(err instanceof Error ? err.message : 'Update failed');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const takeMedication = async () => {
+    setTaking(true);
+    setError(null);
+    try {
+      await markMedicationTaken(medication.id);
+      onChanged();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Update failed');
+    } finally {
+      setTaking(false);
     }
   };
 
@@ -198,7 +212,7 @@ export function MedicationItem({ medication, onChanged }: MedicationItemProps) {
   }
 
   return (
-    <div className="med-item">
+    <div className={`med-item${medication.taken ? ' med-item--taken' : ''}`}>
       <div className="med-item__text">
         <div className="med-item__name">
           <span className="med-item__name-text">{medication.name}</span>
@@ -219,6 +233,20 @@ export function MedicationItem({ medication, onChanged }: MedicationItemProps) {
         )}
       </div>
       <div className="med-item__actions">
+        {medication.taken ? (
+          <button type="button" className="btn btn--taken" disabled>
+            ✓ Taken today
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="btn btn--take"
+            onClick={() => void takeMedication()}
+            disabled={taking}
+          >
+            {taking ? 'Taking…' : 'Take'}
+          </button>
+        )}
         <button type="button" className="btn btn--ghost" onClick={startEdit}>
           Edit
         </button>

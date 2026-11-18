@@ -13,9 +13,17 @@ db.exec(`
     schedule TEXT,
     instructions TEXT,
     notes TEXT,
+    takenDate TEXT,
     createdAt TEXT NOT NULL DEFAULT (datetime('now')),
     updatedAt TEXT NOT NULL DEFAULT (datetime('now'))
   )
 `);
+
+// Migrate pre-existing databases that lack the takenDate column.
+const columns = db.prepare(`PRAGMA table_info(medications)`).all() as Array<{ name: string }>;
+const hasTakenDate = columns.some((column) => column.name === 'takenDate');
+if (!hasTakenDate) {
+  db.exec(`ALTER TABLE medications ADD COLUMN takenDate TEXT`);
+}
 
 export { db };

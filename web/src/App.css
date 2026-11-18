@@ -182,6 +182,30 @@ body {
   background: #fef2f2;
 }
 
+.btn--take {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(22, 163, 74, 0.28);
+}
+
+.btn--take:hover:not(:disabled) {
+  background: #15803d;
+}
+
+.btn--taken {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #15803d;
+  cursor: default;
+  box-shadow: none;
+}
+
+.btn--taken:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
 .error {
   color: #dc2626;
   font-size: 0.875rem;
@@ -327,6 +351,14 @@ body {
   align-items: center;
   gap: 0.5rem;
   flex-shrink: 0;
+}
+
+.med-item--taken .med-item__name {
+  color: #94a3b8;
+}
+
+.med-item--taken .med-item__name-text {
+  text-decoration: line-through;
 }
 
 /* ---------- Edit mode ---------- */

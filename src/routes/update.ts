@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { Context } from 'hono';
-import { readJson } from '../helpers';
+import { readJson, isTakenToday } from '../helpers';
 
 export const handleUpdate = async (c: Context) => {
   const id = c.req.param('id') as string;
@@ -10,7 +10,7 @@ export const handleUpdate = async (c: Context) => {
   }
   const row = db
     .prepare(
-      `SELECT id, name, dosage, form, frequency, schedule, instructions, notes, createdAt, updatedAt
+      `SELECT id, name, dosage, form, frequency, schedule, instructions, notes, takenDate, createdAt, updatedAt
        FROM medications WHERE id = ?`,
     )
     .get(id) as any;
@@ -56,10 +56,10 @@ export const handleUpdate = async (c: Context) => {
     instructions === row.instructions &&
     notes === row.notes
   ) {
-    return c.json(row);
+    return c.json({ ...row, taken: isTakenToday(row.takenDate) });
   }
   // updatedAt is refreshed on update; the `id` column is deliberately excluded from
-  // the SET clause.
+  // the SET clause (as is takenDate, which is managed by the taken endpoint).
   db.prepare(
     `UPDATE medications
      SET name=?, dosage=?, form=?, frequency=?, schedule=?, instructions=?, notes=?, updatedAt=datetime('now')
@@ -74,12 +74,11 @@ export const handleUpdate = async (c: Context) => {
     notes,
     id,
   );
-  return c.json(
-    db
-      .prepare(
-        `SELECT id, name, dosage, form, frequency, schedule, instructions, notes, createdAt, updatedAt
-         FROM medications WHERE id = ?`,
-      )
-      .get(id) as any,
-  );
+  const updated = db
+    .prepare(
+      `SELECT id, name, dosage, form, frequency, schedule, instructions, notes, takenDate, createdAt, updatedAt
+       FROM medications WHERE id = ?`,
+    )
+    .get(id) as any;
+  return c.json({ ...updated, taken: isTakenToday(updated.takenDate) });
 };

@@ -5,6 +5,7 @@ import { handleCreate } from './routes/create';
 import { handleGet } from './routes/get';
 import { handleUpdate } from './routes/update';
 import { handleDelete } from './routes/delete';
+import { handleMarkTaken } from './routes/taken';
 import { handleRoot } from './routes/root';
 import { logRequest, logServerAddress } from './logger';
 import path from 'node:path';
@@ -90,6 +91,7 @@ app.get('/medications', handleList);
 app.post('/medications', handleCreate);
 app.get('/medications/:id', handleGet);
 app.patch('/medications/:id', handleUpdate);
+app.post('/medications/:id/taken', handleMarkTaken);
 app.delete('/medications/:id', handleDelete);
 app.get('/', handleRoot);
 
@@ -99,6 +101,7 @@ api.get('/medications', handleList);
 api.post('/medications', handleCreate);
 api.get('/medications/:id', handleGet);
 api.patch('/medications/:id', handleUpdate);
+api.post('/medications/:id/taken', handleMarkTaken);
 api.delete('/medications/:id', handleDelete);
 app.route('/api', api);
 

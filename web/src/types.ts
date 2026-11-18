@@ -7,6 +7,8 @@ export interface Medication {
   schedule: string | null;
   instructions: string | null;
   notes: string | null;
+  taken: boolean;
+  takenDate: string | null;
   createdAt: string;
   updatedAt: string;
 }

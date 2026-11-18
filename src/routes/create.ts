@@ -20,15 +20,14 @@ export const handleCreate = async (c: Context) => {
   const id = crypto.randomUUID();
   // createdAt and updatedAt are set by the column defaults (datetime('now')).
   db.prepare(
-    `INSERT INTO medications (id, name, dosage, form, frequency, schedule, instructions, notes, createdAt, updatedAt)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  ).run(id, name, dosage, form, frequency, schedule, instructions, notes, 'datetime(\'now\')', 'datetime(\'now\')');
-  return c.json(
-    db
-      .prepare(
-        `SELECT id, name, dosage, form, frequency, schedule, instructions, notes, createdAt, updatedAt
-         FROM medications WHERE id = ?`,
-      )
-      .get(id) as any,
-  );
+    `INSERT INTO medications (id, name, dosage, form, frequency, schedule, instructions, notes, takenDate, createdAt, updatedAt)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  ).run(id, name, dosage, form, frequency, schedule, instructions, notes, null, 'datetime(\'now\')', 'datetime(\'now\')');
+  const row = db
+    .prepare(
+      `SELECT id, name, dosage, form, frequency, schedule, instructions, notes, takenDate, createdAt, updatedAt
+       FROM medications WHERE id = ?`,
+    )
+    .get(id) as any;
+  return c.json({ ...row, taken: false });
 };
