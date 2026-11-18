@@ -98,7 +98,7 @@ curl -X DELETE http://localhost:3000/medications/<id>
 
 ## React UI
 
-- Created with **React 18 + Vite 6** in `web/`; see `npm run build:web` and `npm run dev:web`.
+- Created with **React 19 + Vite 6** in `web/`; see `npm run build:web` and `npm run dev:web`.
 - The API server (`/ui` route in `src/index.ts`) serves the built UI from `web/dist` and proxies `/api/medications` to the API so the UI talks to the server same-origin. The POC `src/routes/ui.tsx` was removed.
 - Dev workflow: `npm run build && npm run dev` (API on :3000), plus `npm run dev:web`
   for the Vite dev server on :5173 (which proxies `/api` to :3000).

@@ -112,4 +112,4 @@ git commit -m "<message>"
 
 - One file per route under `src/routes/`, following the existing route handler style (Hono handlers with `(c: Context, next: Next) => R` signature).
 - Database access goes through `src/db.ts` (single SQLite instance); do not open new SQLite connections elsewhere.
-- UI code lives under `web/` (React 18 + Vite); the built UI is served by the API server at `/ui`.
+- UI code lives under `web/` (React 19 + Vite); the built UI is served by the API server at `/ui`.
