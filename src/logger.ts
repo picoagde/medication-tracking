@@ -36,7 +36,7 @@ export async function logRequest(entry: RequestLogEntry): Promise<void> {
 export async function logServerAddress(address: AddressInfo) {
   const line = `${JSON.stringify({
     ts: new Date().toISOString(),
-    service: 'notes-app API',
+    service: 'medication-app API',
     listening: true,
     address: address.address,
     port: address.port,

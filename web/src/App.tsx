@@ -1,24 +1,32 @@
 import { useCallback, useEffect, useState } from 'react';
-import { NoteItem } from './components/NoteItem';
-import { createNote, listNotes } from './api';
-import type { Note, NoteDraft } from './types';
+import { MedicationItem } from './components/MedicationItem';
+import { createMedication, listMedications } from './api';
+import type { Medication, MedicationDraft } from './types';
 import './App.css';
 
-
 export default function App() {
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [medications, setMedications] = useState<Medication[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [draft, setDraft] = useState<NoteDraft>({ title: '', content: '' });
+  const [draft, setDraft] = useState<MedicationDraft>({
+    id: '',
+    name: '',
+    dosage: '',
+    form: '',
+    frequency: '',
+    schedule: '',
+    instructions: '',
+    notes: '',
+  });
   const [createError, setCreateError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      setNotes(await listNotes());
+      setMedications(await listMedications());
       setLoadError(null);
     } catch (err) {
-      setLoadError(err instanceof Error ? err.message : 'Failed to load notes');
+      setLoadError(err instanceof Error ? err.message : 'Failed to load medications');
     } finally {
       setLoading(false);
     }
@@ -30,14 +38,23 @@ export default function App() {
 
   const submitCreate = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!draft.title.trim()) {
-      setCreateError('Title is required');
+    if (!draft.name.trim()) {
+      setCreateError('Name is required');
       return;
     }
     setCreateError(null);
     try {
-      await createNote(draft);
-      setDraft({ title: '', content: '' });
+      await createMedication(draft);
+      setDraft({
+        id: '',
+        name: '',
+        dosage: '',
+        form: '',
+        frequency: '',
+        schedule: '',
+        instructions: '',
+        notes: '',
+      });
       await refresh();
     } catch (err) {
       setCreateError(err instanceof Error ? err.message : 'Create failed');
@@ -47,47 +64,86 @@ export default function App() {
   return (
     <div className="app">
       <header className="app__header">
-        <h1>Notes</h1>
+        <h1>Medications</h1>
       </header>
 
       <section className="app__form">
-        <form className="note-form" onSubmit={submitCreate}>
+        <form className="med-form" onSubmit={submitCreate}>
           <input
-            className="note-form__title"
+            className="med-form__name"
             type="text"
-            placeholder="Title"
-            value={draft.title}
-            onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+            placeholder="Medication name"
+            value={draft.name}
+            onChange={(e) => setDraft({ ...draft, name: e.target.value })}
             autoFocus
+            maxLength={120}
+          />
+          <input
+            className="med-form__dosage"
+            type="text"
+            placeholder="Dosage (e.g. 500 mg)"
+            value={draft.dosage}
+            onChange={(e) => setDraft({ ...draft, dosage: e.target.value })}
+            maxLength={200}
+          />
+          <input
+            className="med-form__form"
+            type="text"
+            placeholder="Form (e.g. tablet, capsule, liquid)"
+            value={draft.form}
+            onChange={(e) => setDraft({ ...draft, form: e.target.value })}
+            maxLength={80}
+          />
+          <input
+            className="med-form__frequency"
+            type="text"
+            placeholder="Frequency (e.g. once daily)"
+            value={draft.frequency}
+            onChange={(e) => setDraft({ ...draft, frequency: e.target.value })}
+            maxLength={120}
+          />
+          <input
+            className="med-form__schedule"
+            type="text"
+            placeholder="Schedule (e.g. 07:00, 19:00)"
+            value={draft.schedule}
+            onChange={(e) => setDraft({ ...draft, schedule: e.target.value })}
             maxLength={200}
           />
           <textarea
-            className="note-form__content"
-            placeholder="Content"
-            value={draft.content}
-            onChange={(e) => setDraft({ ...draft, content: e.target.value })}
-            maxLength={20000}
+            className="med-form__instructions"
+            placeholder="Instructions (e.g. Take with food)"
+            value={draft.instructions}
+            onChange={(e) => setDraft({ ...draft, instructions: e.target.value })}
+            maxLength={500}
+          />
+          <textarea
+            className="med-form__notes"
+            placeholder="Notes (optional)"
+            value={draft.notes}
+            onChange={(e) => setDraft({ ...draft, notes: e.target.value })}
+            maxLength={2000}
           />
           <button type="submit" className="btn btn--primary" disabled={loading}>
-            Add note
+            Add medication
           </button>
           {createError && <p className="error">{createError}</p>}
         </form>
       </section>
 
       <section className="app__list">
-        <h2>Notes</h2>
+        <h2>Medications</h2>
         {loading ? (
           <p className="loading">Loading…</p>
         ) : loadError ? (
           <p className="error">{loadError}</p>
-        ) : notes.length === 0 ? (
-          <p className="empty">No notes yet — add your first note above.</p>
+        ) : medications.length === 0 ? (
+          <p className="empty">No medications yet — add your first one above.</p>
         ) : (
-          <ul className="note-list">
-            {notes.map((note) => (
-              <li key={note.id} className="note-item">
-                <NoteItem note={note} onChanged={() => void refresh()} />
+          <ul className="med-list">
+            {medications.map((med) => (
+              <li key={med.id} className="med-item">
+                <MedicationItem medication={med} onChanged={() => void refresh()} />
               </li>
             ))}
           </ul>

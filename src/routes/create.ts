@@ -7,12 +7,28 @@ export const handleCreate = async (c: Context) => {
   if (error) {
     return c.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
-  if (!data || !data.title) {
-    return c.json({ error: 'Title is required' }, { status: 400 });
+  if (!data || !data.name) {
+    return c.json({ error: 'Name is required' }, { status: 400 });
   }
-  const content = (data.content ?? '').trim();
+  const name = data.name.trim();
+  const dosage = (data.dosage ?? '').trim();
+  const form = (data.form ?? '').trim();
+  const frequency = (data.frequency ?? '').trim();
+  const schedule = (data.schedule ?? '').trim();
+  const instructions = (data.instructions ?? '').trim();
+  const notes = (data.notes ?? '').trim();
   const id = crypto.randomUUID();
-  // Single INSERT — createdAt is set by the column default.
-  db.prepare('INSERT INTO notes (id, title, content) VALUES (?, ?, ?)').run(id, data.title, content);
-  return c.json(db.prepare('SELECT id, title, content, createdAt FROM notes WHERE id = ?').get(id) as any);
+  // createdAt and updatedAt are set by the column defaults (datetime('now')).
+  db.prepare(
+    `INSERT INTO medications (id, name, dosage, form, frequency, schedule, instructions, notes, createdAt, updatedAt)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  ).run(id, name, dosage, form, frequency, schedule, instructions, notes, 'datetime(\'now\')', 'datetime(\'now\')');
+  return c.json(
+    db
+      .prepare(
+        `SELECT id, name, dosage, form, frequency, schedule, instructions, notes, createdAt, updatedAt
+         FROM medications WHERE id = ?`,
+      )
+      .get(id) as any,
+  );
 };

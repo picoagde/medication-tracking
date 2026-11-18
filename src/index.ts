@@ -86,20 +86,20 @@ async function handleUi(c: Context): Promise<Response> {
 
 const app = new Hono();
 
-app.get('/notes', handleList);
-app.post('/notes', handleCreate);
-app.get('/notes/:id', handleGet);
-app.patch('/notes/:id', handleUpdate);
-app.delete('/notes/:id', handleDelete);
+app.get('/medications', handleList);
+app.post('/medications', handleCreate);
+app.get('/medications/:id', handleGet);
+app.patch('/medications/:id', handleUpdate);
+app.delete('/medications/:id', handleDelete);
 app.get('/', handleRoot);
 
-// Same-origin API routes for the React UI (frontend talks to `/api/notes`).
+// Same-origin API routes for the React UI (frontend talks to `/api/medications`).
 const api = new Hono();
-api.get('/notes', handleList);
-api.post('/notes', handleCreate);
-api.get('/notes/:id', handleGet);
-api.patch('/notes/:id', handleUpdate);
-api.delete('/notes/:id', handleDelete);
+api.get('/medications', handleList);
+api.post('/medications', handleCreate);
+api.get('/medications/:id', handleGet);
+api.patch('/medications/:id', handleUpdate);
+api.delete('/medications/:id', handleDelete);
 app.route('/api', api);
 
 app.get('/ui', handleUi);

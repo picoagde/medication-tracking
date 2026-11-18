@@ -1,6 +1,6 @@
-# Contributing to notes-app
+# Contributing to medication-tracker
 
-Thanks for your interest in improving notes-app! This project is a lightweight REST API for managing notes, built with **Hono**, **TypeScript**, and **SQLite (`node:sqlite`)**, with a React + Vite UI under `web/`.
+Thanks for your interest in improving medication-tracker! This project is a lightweight REST API for managing medications, built with **Hono**, **TypeScript**, and **SQLite (`node:sqlite`)**, with a React + Vite UI under `web/`.
 
 ## Prerequisites
 
@@ -9,7 +9,7 @@ Thanks for your interest in improving notes-app! This project is a lightweight R
 
 ## Getting started
 
-Run these commands from the repository root (the `notes-app` directory):
+Run these commands from the repository root (the `medication-tracker` directory):
 
 ```bash
 npm install
@@ -20,7 +20,7 @@ npm install
 Two servers are used — the API server and the React UI dev server:
 
 ```bash
-# API server (Hono + TypeScript, port 3000) — serves /ui, /notes, and /api/notes
+# API server (Hono + TypeScript, port 3000) — serves /ui, /medications, and /api/medications
 npm run dev          # runs node dist/index.js
 # or:
 npm start            # same as dev
@@ -41,7 +41,7 @@ npm run build:web   # vite build -> outputs to web/dist/ (built UI)
 ## Project structure
 
 ```
-notes-app/
+medication-tracker/
 ├── package.json   # dependencies, scripts (build / build:web / dev / dev:web / start)
 ├── tsconfig.json  # TypeScript config (strict, outDir ./dist, includes only src/)
 ├── vite.config.ts # Vite config for the React UI (root: web/, dev proxy /api -> :3000, host 0.0.0.0)
@@ -49,7 +49,7 @@ notes-app/
 ├── Dockerfile    # Docker build/runtime config for the project
 ├── .dockerignore
 ├── LICENSE
-└── web/           # React + Vite UI (create/edit/delete notes)
+└── web/           # React + Vite UI (create/edit/delete medications)
     ├── index.html
     └── src/
         ├── main.tsx
@@ -58,17 +58,17 @@ notes-app/
         ├── api.ts
         ├── types.ts
         └── components/
-            └── NoteItem.tsx
+            └── MedicationItem.tsx
 └── src/
-    ├── db.ts      # single instance of the SQLite DB (notes.db)
+    ├── db.ts      # single instance of the SQLite DB (medications.db)
     ├── helpers.ts # request-body JSON helper (readJson)
     ├── index.ts   # Hono app that registers all routes (serves built UI at /ui)
     └── routes/    # one file per route:
-        ├── list.ts     (GET /notes)
-        ├── create.ts   (POST /notes)
-        ├── get.ts      (GET /notes/:id)
-        ├── update.ts   (PATCH /notes/:id)
-        ├── delete.ts   (DELETE /notes/:id)
+        ├── list.ts     (GET /medications)
+        ├── create.ts   (POST /medications)
+        ├── get.ts      (GET /medications/:id)
+        ├── update.ts   (PATCH /medications/:id)
+        ├── delete.ts   (DELETE /medications/:id)
         ├── root.ts     (GET /)
         └── ui.ts       (GET /ui -> serves the built React UI)
 ```
@@ -77,29 +77,29 @@ notes-app/
 
 | Method | Path               | Description |
 |--------|--------------------|-------------|
-| GET    | `/`                | `{"text":"Notes API running"}` |
-| GET    | `/notes`           | List all notes (array) |
-| POST   | `/notes`           | Create note; body `{ title?, content? }`. **Title required.** Content defaults to trimmed body value. |
-| GET    | `/notes/:id`       | Get single note by ID (404 if not found or `id` missing). |
-| PATCH  | `/notes/:id`       | Update `title` and/or `content` (404 if not found or `id` missing). |
-| DELETE | `/notes/:id`       | Delete the note. |
+| GET    | `/`                | `{"text":"Medication tracking API running"}` |
+| GET    | `/medications`     | List all medications (array) |
+| POST   | `/medications`     | Create medication; body `{ name?, dosage?, form?, frequency?, schedule?, instructions?, notes? }`. **Name required.** |
+| GET    | `/medications/:id` | Get single medication by ID (404 if not found or `id` missing). |
+| PATCH  | `/medications/:id` | Update `name` and/or optional medication fields (404 if not found or `id` missing). |
+| DELETE | `/medications/:id` | Delete the medication. |
 
 Example:
 
 ```bash
-curl -X POST http://localhost:3000/notes \
+curl -X POST http://localhost:3000/medications \
   -H "Content-Type: application/json" \
-  -d '{"title":"My first note","content":"Hello world!"}'
+  -d '{"name":"Aspirin","dosage":"500 mg","form":"tablet","frequency":"once daily","schedule":"08:00"}'
 ```
 
-Notes UI: visit `http://localhost:3000/ui` (the built React UI served by the API server).
+Medication UI: visit `http://localhost:3000/ui` (the built React UI served by the API server).
 
 ## Contributing
 
 - Keep changes consistent with the existing style and structure.
 - TypeScript is compiled with `strict: true` and `noUnusedLocals` / `noUnusedParameters` enabled; make sure `npm run build` passes.
 - Add/update docs (AGENTS.md / CONTRIBUTING.md) when behavior or structure changes.
-- Commit changes with a clear message (e.g., `"Add README for notes-app"`). The git workflow is:
+- Commit changes with a clear message (e.g., `"Add README for medication-tracker"`). The git workflow is:
 
 ```bash
 git add <file>

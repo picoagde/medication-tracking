@@ -24,14 +24,17 @@ body {
   margin-bottom: 2rem;
 }
 
-.note-form {
+.med-form {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.note-form__title,
-.note-form__content {
+.med-form__name,
+.med-form__dosage,
+.med-form__form,
+.med-form__frequency,
+.med-form__schedule {
   flex: 1;
   font: inherit;
   padding: 0.75rem;
@@ -40,8 +43,23 @@ body {
   background: #fff;
 }
 
-.note-form__content {
-  min-height: 6rem;
+.med-form__name {
+  flex: 2;
+  font-weight: 600;
+}
+
+.med-form__schedule {
+  flex: 1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.med-form__instructions {
+  min-height: 4rem;
+  resize: vertical;
+}
+
+.med-form__notes {
+  min-height: 3rem;
   resize: vertical;
 }
 
@@ -87,7 +105,7 @@ body {
   margin: 1rem 0;
 }
 
-.note-list {
+.med-list {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -96,7 +114,7 @@ body {
   gap: 0.5rem;
 }
 
-.note-item {
+.med-item {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -107,30 +125,32 @@ body {
   background: #fff;
 }
 
-.note-item__text {
+.med-item__text {
   flex: 1;
   min-width: 0;
 }
 
-.note-item__title {
+.med-item__name {
   font-weight: 600;
 }
 
-.note-item__content {
+.med-item__details {
   margin: 0.25rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
   color: #486581;
-  white-space: pre-wrap;
-  word-break: break-word;
+  font-size: 0.85rem;
 }
 
-.note-item__actions {
+.med-item__actions {
   display: flex;
   gap: 0.5rem;
   align-items: center;
   flex-shrink: 0;
 }
 
-.note-edit {
+.med-edit {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -140,8 +160,11 @@ body {
   background: #fbfcfd;
 }
 
-.note-edit__title,
-.note-edit__content {
+.med-edit__name,
+.med-edit__dosage,
+.med-edit__form,
+.med-edit__frequency,
+.med-edit__schedule {
   font: inherit;
   padding: 0.5rem;
   border: 1px solid #cbd2d9;
@@ -149,12 +172,25 @@ body {
   background: #fff;
 }
 
-.note-edit__content {
+.med-edit__name {
+  font-weight: 600;
+}
+
+.med-edit__schedule {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.med-edit__instructions {
   min-height: 4rem;
   resize: vertical;
 }
 
-.note-edit__actions {
+.med-edit__notes {
+  min-height: 3rem;
+  resize: vertical;
+}
+
+.med-edit__actions {
   display: flex;
   gap: 0.5rem;
   justify-content: flex-end;

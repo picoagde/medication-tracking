@@ -1,6 +1,6 @@
-import type { Note, NoteDraft } from './types';
+import type { Medication, MedicationDraft } from './types';
 
-const BASE = '/api/notes';
+const BASE = '/api/medications';
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, options);
@@ -17,26 +17,26 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-export async function listNotes(): Promise<Note[]> {
-  return request<Note[]>(BASE);
+export async function listMedications(): Promise<Medication[]> {
+  return request<Medication[]>(BASE);
 }
 
-export async function createNote(input: NoteDraft): Promise<Note> {
-  return request<Note>(BASE, {
+export async function createMedication(input: MedicationDraft): Promise<Medication> {
+  return request<Medication>(BASE, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title: input.title, content: input.content }),
+    body: JSON.stringify(input),
   });
 }
 
-export async function updateNote(id: string, input: NoteDraft): Promise<Note> {
-  return request<Note>(`${BASE}/${id}`, {
+export async function updateMedication(id: string, input: MedicationDraft): Promise<Medication> {
+  return request<Medication>(`${BASE}/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title: input.title, content: input.content }),
+    body: JSON.stringify(input),
   });
 }
 
-export async function deleteNote(id: string): Promise<void> {
+export async function deleteMedication(id: string): Promise<void> {
   await request<null>(`${BASE}/${id}`, { method: 'DELETE' });
 }

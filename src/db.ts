@@ -1,14 +1,20 @@
 import { DatabaseSync } from 'node:sqlite';
 
-const db = new DatabaseSync('notes.db');
+const db = new DatabaseSync('medications.db');
 
-// Ensure the notes table exists
+// Ensure the medications table exists
 db.exec(`
-  CREATE TABLE IF NOT EXISTS notes (
+  CREATE TABLE IF NOT EXISTS medications (
     id TEXT PRIMARY KEY,
-    title TEXT NOT NULL,
-    content TEXT,
-    createdAt TEXT NOT NULL DEFAULT (datetime('now'))
+    name TEXT NOT NULL,
+    dosage TEXT,
+    form TEXT,
+    frequency TEXT,
+    schedule TEXT,
+    instructions TEXT,
+    notes TEXT,
+    createdAt TEXT NOT NULL DEFAULT (datetime('now')),
+    updatedAt TEXT NOT NULL DEFAULT (datetime('now'))
   )
 `);
 

@@ -1,56 +1,56 @@
-# notes-app
+# medication-tracker
 
-A lightweight **Notes** app REST API that lets you list, create, read, update, and delete notes.
+A lightweight **Medication tracking** app REST API that lets you list, create, read, update, and delete medications. It ships with a React + Vite UI for managing medication entries.
 
 Built with:
 - **Hono** — a fast web framework for TypeScript
 - **TypeScript** — type-safe development
-- **SQLite (`node:sqlite`)** — local file database (`notes.db`)
+- **SQLite (`node:sqlite`)** — local file database (`medications.db`)
 
 ## Description
 
-A small HTTP API serving note entries. It provides CRUD operations on the `notes` table and a simple root endpoint.
+A small HTTP API serving medication entries. It provides CRUD operations on the `medications` table and a simple root endpoint. Each medication tracks a name plus optional dosage, form, frequency, schedule, instructions, and notes.
 
 ### Endpoints
 
 | Method | Path               | Description |
 |--------|--------------------|-------------|
-| GET    | `/`                | Simple info endpoint → `{"text":"Notes API running"}` |
-| GET    | `/notes`           | List all notes (array of `{id, title, content, createdAt}`) |
-| POST   | `/notes`           | Create a new note. Body: `{ title?, content? }`. **Title is required.** Content defaults to the trimmed body value. |
-| GET    | `/notes/:id`       | Get a single note by ID. Returns 404 if not found or `id` param missing. |
-| PATCH  | `/notes/:id`       | Update `title` and/or `content`. Returns 404 if not found or `id` param missing. |
-| DELETE | `/notes/:id`       | Delete the note with the given ID. |
+| GET    | `/`                | Simple info endpoint → `{"text":"Medication tracking API running"}` |
+| GET    | `/medications`     | List all medications (array) |
+| POST   | `/medications`     | Create a medication. Body: `{ name?, dosage?, form?, frequency?, schedule?, instructions?, notes? }`. **Name is required.** |
+| GET    | `/medications/:id` | Get a single medication by ID. Returns 404 if not found or `id` param missing. |
+| PATCH  | `/medications/:id` | Update `name` and/or the optional medication fields. Returns 404 if not found or `id` param missing. |
+| DELETE | `/medications/:id` | Delete the medication with the given ID. |
 
 ### Example Requests
 
-**Create a note**
+**Create a medication**
 ```bash
-curl -X POST http://localhost:3000/notes \
+curl -X POST http://localhost:3000/medications \
   -H "Content-Type: application/json" \
-  -d '{"title":"My first note","content":"Hello world!"}'
+  -d '{"name":"Aspirin","dosage":"500 mg","form":"tablet","frequency":"once daily","schedule":"08:00"}'
 ```
 
-**List notes**
+**List medications**
 ```bash
-curl http://localhost:3000/notes
+curl http://localhost:3000/medications
 ```
 
-**Get a single note**
+**Get a single medication**
 ```bash
-curl http://localhost:3000/notes/<id>
+curl http://localhost:3000/medications/<id>
 ```
 
-**Update a note (PATCH)**
+**Update a medication (PATCH)**
 ```bash
-curl -X PATCH http://localhost:3000/notes/<id> \
+curl -X PATCH http://localhost:3000/medications/<id> \
   -H "Content-Type: application/json" \
-  -d '{"title":"Updated title"}'
+  -d '{"name":"Aspirin","dosage":"81 mg"}'
 ```
 
-**Delete a note**
+**Delete a medication**
 ```bash
-curl -X DELETE http://localhost:3000/notes/<id>
+curl -X DELETE http://localhost:3000/medications/<id>
 ```
 
 ## Quick Start
@@ -73,22 +73,25 @@ npm start       # same as `dev`
 
 The API will be available at **`http://localhost:3000`**.
 
-> Note: The `/ui` route fetches notes from `http://localhost:3000/notes`, so the server must be running before visiting it.
+## Medication Tracking UI
 
-### Database
-Notes are persisted in a local SQLite file named **`notes.db`**, created automatically on the first run.
+Visit **`http://localhost:3000/ui`** to see the Google Keep-style HTML page. It renders the medication list from `http://localhost:3000/medications` and lets you create, edit, and delete medications.
+
+## Database
+
+Medications are persisted in a local SQLite file named **`medications.db`**, created automatically on the first run.
 
 ## Project Structure
 
 ```
-notes-app/
+medication-tracker/
 ├── package.json   # dependencies, scripts (build / build:web / dev / dev:web / start)
 ├── tsconfig.json  # TypeScript config (strict, outDir ./dist, includes only src/)
 ├── vite.config.ts # Vite config for the React UI (root: web/, dev proxy /api -> :3000, host 0.0.0.0)
 ├── Dockerfile    # Docker build/runtime config for the project
 ├── .dockerignore
 ├── LICENSE
-└── web/           # React + Vite UI (create/edit/delete notes)
+└── web/           # React + Vite UI (create/edit/delete medications)
     ├── index.html
     └── src/
         ├── main.tsx
@@ -97,36 +100,20 @@ notes-app/
         ├── api.ts
         ├── types.ts
         └── components/
-            └── NoteItem.tsx
+            └── MedicationItem.tsx
 └── src/
-    ├── db.ts      # single instance of the SQLite DB (`notes.db`)
+    ├── db.ts      # single instance of the SQLite DB (medications.db)
     ├── helpers.ts # request-body JSON helper (`readJson`)
     ├── index.ts   # Hono app that registers all routes (serves built UI at /ui)
     └── routes/    # one file per route:
-        ├── list.ts     (GET /notes)
-        ├── create.ts   (POST /notes)
-        ├── get.ts      (GET /notes/:id)
-        ├── update.ts   (PATCH /notes/:id)
-        ├── delete.ts   (DELETE /notes/:id)
+        ├── list.ts     (GET /medications)
+        ├── create.ts   (POST /medications)
+        ├── get.ts      (GET /medications/:id)
+        ├── update.ts   (PATCH /medications/:id)
+        ├── delete.ts   (DELETE /medications/:id)
         ├── root.ts     (GET /)
         └── ui.ts       (GET /ui -> serves the built React UI)
 ```
-
-## Notes UI
-
-The `/ui` route renders a Google Keep-style HTML page. It loads the notes list from `http://localhost:3000/notes` and displays them in an unordered list:
-
-```html
-<!DOCTYPE html>
-<html lang="en"><head>...<title>Notes</title></head>
-<body style="font-family: sans-serif; max-width: 600px; margin: 2rem auto;">
-  <h1>Notes (Google Keep style)</h1>
-  <p>A list of your notes. Click a note to view details.</p>
-  <ul id="notes-list"></ul>
-  <script>...</script></body></html>
-```
-
-Visit **`http://localhost:3000/ui`** to see it.
 
 ## License
 

@@ -1,18 +1,18 @@
-# AGENTS.md — notes-app
+# AGENTS.md — medication-tracker
 
-Project: **notes-app** — a lightweight REST API for managing notes.
+Project: **medication-tracker** — a lightweight REST API for managing medications.
 Location: `/home/opencode/Projects/notes-app`
 Branch: `master`
 
 ## Overview
 
-A small HTTP API built with **Hono**, **TypeScript**, and **SQLite (`node:sqlite`)**. It exposes CRUD operations on the `notes` table plus a simple root endpoint.
+A small HTTP API built with **Hono**, **TypeScript**, and **SQLite (`node:sqlite`)**. It exposes CRUD operations on the `medications` table plus a simple root endpoint. Each medication tracks a `name` plus optional `dosage`, `form`, `frequency`, `schedule`, `instructions`, and `notes`.
 
 | Feature | Detail |
 |---|---|
 | Framework | Hono (v4.13.14) |
 | Language | TypeScript 7 |
-| Database | SQLite file `notes.db` (created automatically on first run) |
+| Database | SQLite file `medications.db` (created automatically on first run) |
 | Build tool | `tsc` via `npm run build` → outputs to `dist/` |
 
 ## Quick Start
@@ -31,19 +31,19 @@ npm start       # same as `dev`
 # API is available at http://localhost:3000
 ```
 
-The `/ui` route fetches notes from `http://localhost:3000/notes`, so the server must be running before visiting it.
+The `/ui` route fetches medications from `http://localhost:3000/medications`, so the server must be running before visiting it.
 
 ## Project Structure
 
 ```
-notes-app/
+medication-tracker/
 ├── package.json   # dependencies, scripts (build / build:web / dev / dev:web / start)
 ├── tsconfig.json  # TypeScript config (outDir: ./dist, includes only src/)
 ├── vite.config.ts # Vite config for the React UI (root: web/, dev proxy /api -> :3000, host 0.0.0.0)
 ├── Dockerfile    # Docker build/runtime config for the project
 ├── .dockerignore
 ├── LICENSE
-└── web/           # React + Vite UI (create/edit/delete notes)
+└── web/           # React + Vite UI (create/edit/delete medications)
     ├── index.html
     └── src/
         ├── main.tsx
@@ -52,66 +52,74 @@ notes-app/
         ├── api.ts
         ├── types.ts
         └── components/
-            └── NoteItem.tsx
+            └── MedicationItem.tsx
 └── src/
-    ├── db.ts      # single instance of the SQLite DB (`notes.db`)
+    ├── db.ts      # single instance of the SQLite DB (`medications.db`)
     ├── helpers.ts # request-body JSON helper (`readJson`)
     ├── index.ts   # Hono app that registers all routes (serves built UI at /ui)
     └── routes/    # one file per route:
-        ├── list.ts     (GET /notes)
-        ├── create.ts   (POST /notes)
-        ├── get.ts      (GET /notes/:id)
-        ├── update.ts   (PATCH /notes/:id)
-        ├── delete.ts   (DELETE /notes/:id)
+        ├── list.ts     (GET /medications)
+        ├── create.ts   (POST /medications)
+        ├── get.ts      (GET /medications/:id)
+        ├── update.ts   (PATCH /medications/:id)
+        ├── delete.ts   (DELETE /medications/:id)
         ├── root.ts     (GET /)
         └── ui.ts       (GET /ui -> serves the built React UI)
-
-## React UI
-
-- Created with **React 18 + Vite 6** in `web/`; see `npm run build:web` and
-  `npm run dev:web`.
-- The API server (`/ui` route in `src/index.ts`) serves the built UI from
-  `web/dist` and proxies `/api/notes` to the API so the UI talks to the
-  server same-origin. The POC `src/routes/ui.tsx` was removed.
-- Dev workflow: `npm run build && npm run dev` (API on :3000), plus `npm run dev:web`
-  for the Vite dev server on :5173 (which proxies `/api` to :3000).
 
 ## API Endpoints
 
 | Method | Path               | Description |
 |--------|--------------------|-------------|
-| GET    | `/`                | `{"text":"Notes API running"}` |
-| GET    | `/notes`           | List all notes (array) |
-| POST   | `/notes`           | Create note; body `{ title?, content? }`. **Title required.** Content defaults to trimmed body value. |
-| GET    | `/notes/:id`       | Get single note by ID (404 if not found or `id` missing). |
-| PATCH  | `/notes/:id`       | Update `title` and/or `content` (404 if not found or `id` missing). |
-| DELETE | `/notes/:id`       | Delete the note. |
+| GET    | `/`                | `{"text":"Medication tracking API running"}` |
+| GET    | `/medications`     | List all medications (array) |
+| POST   | `/medications`     | Create medication; body `{ name?, dosage?, form?, frequency?, schedule?, instructions?, notes? }`. **Name required.** |
+| GET    | `/medications/:id` | Get single medication by ID (404 if not found or `id` missing). |
+| PATCH  | `/medications/:id` | Update `name` and/or optional medication fields (404 if not found or `id` missing). |
+| DELETE | `/medications/:id` | Delete the medication. |
 
 ### Examples
 
 ```bash
-# Create a note
-curl -X POST http://localhost:3000/notes \
+# Create a medication
+curl -X POST http://localhost:3000/medications \
   -H "Content-Type: application/json" \
-  -d '{"title":"My first note","content":"Hello world!"}'
+  -d '{"name":"Aspirin","dosage":"500 mg","form":"tablet","frequency":"once daily","schedule":"08:00"}'
 
-# List notes
-curl http://localhost:3000/notes
+# List medications
+curl http://localhost:3000/medications
 
-# Get /update /delete a note
-curl http://localhost:3000/notes/<id>   # GET
-curl -X PATCH http://localhost:3000/notes/<id> \
+# Get /update /delete a medication
+curl http://localhost:3000/medications/<id>   # GET
+curl -X PATCH http://localhost:3000/medications/<id> \
   -H "Content-Type: application/json" \
-  -d '{"title":"New title"}'
-curl -X DELETE http://localhost:3000/notes/<id>
+  -d '{"name":"Aspirin","dosage":"81 mg"}'
+curl -X DELETE http://localhost:3000/medications/<id>
 ```
+
+## React UI
+
+- Created with **React 18 + Vite 6** in `web/`; see `npm run build:web` and `npm run dev:web`.
+- The API server (`/ui` route in `src/index.ts`) serves the built UI from `web/dist` and proxies `/api/medications` to the API so the UI talks to the server same-origin. The POC `src/routes/ui.tsx` was removed.
+- Dev workflow: `npm run build && npm run dev` (API on :3000), plus `npm run dev:web`
+  for the Vite dev server on :5173 (which proxies `/api` to :3000).
+
+## API
+
+| Method | Path               | Description |
+|--------|--------------------|-------------|
+| GET    | `/`                | `{"text":"Medication tracking API running"}` |
+| GET    | `/medications`     | List all medications (array) |
+| POST   | `/medications`     | Create medication; body `{ name?, dosage?, form?, frequency?, schedule?, instructions?, notes? }`. **Name required.** |
+| GET    | `/medications/:id` | Get single medication by ID (404 if not found or `id` missing). |
+| PATCH  | `/medications/:id` | Update `name` and/or optional medication fields (404 if not found or `id` missing). |
+| DELETE | `/medications/:id` | Delete the medication. |
 
 ## Notes UI
 
-Visit **`http://localhost:3000/ui`** to see the Google Keep-style HTML page. It renders an unordered list of notes fetched from `/notes`.
+Visit **`http://localhost:3000/ui`** to see the Google Keep-style HTML page. It renders a medication list and lets you create, edit, and delete medications.
 
 ## Git Workflow
 
-- Commits are made with messages like `"Add README for notes-app"`.
+- Commits are made with messages like `"Add README for medication-tracker"`.
 - `git status --short` shows untracked files (e.g., new docs).
 - Run `git add <file>` and `git commit -m "..."` to record changes.
