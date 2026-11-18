@@ -1,7 +1,7 @@
 # AGENTS.md — medication-tracker
 
 Project: **medication-tracker** — a lightweight REST API for managing medications.
-Location: `/home/opencode/Projects/notes-app`
+Location: `/home/opencode/Projects/medication-tracker`
 Branch: `master`
 
 ## Overview
@@ -18,7 +18,7 @@ A small HTTP API built with **Hono**, **TypeScript**, and **SQLite (`node:sqlite
 ## Quick Start
 
 ```bash
-cd /home/opencode/Projects/notes-app
+cd /home/opencode/Projects/medication-tracker
 
 # 1. Build the project
 npm run build   # runs `tsc`
@@ -114,7 +114,7 @@ curl -X DELETE http://localhost:3000/medications/<id>
 | PATCH  | `/medications/:id` | Update `name` and/or optional medication fields (404 if not found or `id` missing). |
 | DELETE | `/medications/:id` | Delete the medication. |
 
-## Notes UI
+## Medication UI
 
 Visit **`http://localhost:3000/ui`** to see the Google Keep-style HTML page. It renders a medication list and lets you create, edit, and delete medications.
 

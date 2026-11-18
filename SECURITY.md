@@ -1,12 +1,12 @@
-# Security Review — notes-app
+# Security Review — medication-tracker
 
 **Date:** 2026-11-01
-**Scope:** All source files of the notes-app REST API (`src/`, `web/`) plus build/runtime configuration (`package.json`, `tsconfig.json`, `vite.config.ts`, `Dockerfile`, `.dockerignore`, `.gitignore`).
+**Scope:** All source files of the medication-tracker REST API (`src/`, `web/`) plus build/runtime configuration (`package.json`, `tsconfig.json`, `vite.config.ts`, `Dockerfile`, `.dockerignore`, `.gitignore`).
 **Method:** Static code review of every source file; dynamic verification against a locally running server (`npm run build` → `npm start`, port 3000) using `curl` for SQL-injection and path-traversal probes.
 
 ## Executive summary
 
-The project is a small POC REST API (Hono + TypeScript + SQLite) with a React/Vite UI. It is **not yet deployable as a secure service**: the API is completely **unauthenticated**, runs over **plain HTTP**, has **no rate limiting or hardening headers**, and binds to **all network interfaces** by default. On the other hand, the most important injection/scripting risks are **already well mitigated**: all SQL input is parameterized, static-file path traversal is blocked, and the UI never uses `dangerouslySetInnerHTML` (so React auto-escaping protects note content).
+The project is a small POC REST API (Hono + TypeScript + SQLite) with a React/Vite UI. It is **not yet deployable as a secure service**: the API is completely **unauthenticated**, runs over **plain HTTP**, has **no rate limiting or hardening headers**, and binds to **all network interfaces** by default. On the other hand, the most important injection/scripting risks are **already well mitigated**: all SQL input is parameterized, static-file path traversal is blocked, and the UI never uses `dangerouslySetInnerHTML` (so React auto-escaping protects medication content).
 
 No security findings are rated **Critical** or **High**. The notable risks are the exposed, unauthenticated API surface and the absence of transport/hardening protections (Low severity). Details and evidence are below.
 
@@ -31,7 +31,7 @@ No security findings are rated **Critical** or **High**. The notable risks are t
 - A grep for `auth`, `Authorization`, `rateLimit`, `CORS` across `src/` returned no matches.
 - `Dockerfile` exposes port 3000 and runs the compiled API directly.
 
-**Impact:** Any network host that can reach the service can read notes (`GET /notes`), create notes (`POST /notes`, title required), update/delete notes, and read the UI. For a local POC this is expected, but the service as shipped is not ready to expose to untrusted networks.
+**Impact:** Any network host that can reach the service can read medications (`GET /medications`), create medications (`POST /medications`, title required), update/delete medications, and read the UI. For a local POC this is expected, but the service as shipped is not ready to expose to untrusted networks.
 
 **Recommendation:** Add authentication (e.g., API keys / session) and per-route rate limiting before any public deployment; restrict the server bind to `127.0.0.1` (or place the API behind a network boundary) unless it is intentionally public.
 
@@ -41,7 +41,7 @@ No security findings are rated **Critical** or **High**. The notable risks are t
 
 **Evidence:** No TLS/`https` handling, reverse proxy, or certificate configuration exists anywhere in the repo (grep for `tls`, `https`, `certificate` in `src/`, `Dockerfile` returned no matches).
 
-**Impact:** All note data and the UI are transmitted in cleartext if the service is reachable from outside the host.
+**Impact:** All medication data and the UI are transmitted in cleartext if the service is reachable from outside the host.
 
 **Recommendation:** Put the API behind a TLS-terminating reverse proxy (e.g., Caddy/nginx) or add TLS termination in the server when the service is deployed publicly.
 
@@ -51,7 +51,7 @@ No security findings are rated **Critical** or **High**. The notable risks are t
 
 **Evidence:** Grep for `Security`, `CSP`, `HSTS`, `X-Content-Type-Options` in `src/` returned no matches; the `/ui` response is plain HTML with no security headers.
 
-**Impact:** Minor hardening gap. The only injection vector on the UI is note content, which is escaped by React (see below), so this is low severity — but missing `Content-Security-Policy` removes any defense-in-depth against future rendering changes.
+**Impact:** Minor hardening gap. The only injection vector on the UI is medication content, which is escaped by React (see below), so this is low severity — but missing `Content-Security-Policy` removes any defense-in-depth against future rendering changes.
 
 **Recommendation:** Add a Hono middleware that sets `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, and (if TLS is added) HSTS.
 
@@ -74,9 +74,9 @@ However, the guard relies on the normalize/`startsWith` check only; it does not 
 
 **Location:** `src/routes/create.ts`, `src/routes/update.ts`, `src/db.ts`.
 
-**Evidence:** `title` is `NOT NULL` in the schema but otherwise stored as-is; `content` is stored raw (verified: a payload `1;DROP TABLE notes;` was persisted verbatim as the `content` value, and the notes table retained its rows afterward — the queries are parameterized, so this is data, not injection).
+**Evidence:** `title` is `NOT NULL` in the schema but otherwise stored as-is; `content` is stored raw (verified: a payload `1;DROP TABLE medications;` was persisted verbatim as the `content` value, and the medications table retained its rows afterward — the queries are parameterized, so this is data, not injection).
 
-**Impact:** Informational. Not a vulnerability in this codebase because every SQL statement uses bound parameters and the UI escapes rendered content. The only residual risk is if note content is later consumed by unescaped HTML or injected into markup.
+**Impact:** Informational. Not a vulnerability in this codebase because every SQL statement uses bound parameters and the UI escapes rendered content. The only residual risk is if medication content is later consumed by unescaped HTML or injected into markup.
 
 **Recommendation:** Consider optional length caps (e.g., 200 chars for title, 20000 for content) and sanitization at the app boundary when the UI is reused by untrusted clients.
 
@@ -92,10 +92,10 @@ However, the guard relies on the normalize/`startsWith` check only; it does not 
 
 ## Areas verified to be secure
 
-- **SQL injection:** All identifiers/parameters are passed as bound placeholders (`?`). Verified: `GET /notes/1%20OR%201%3D1` returns `404` (`{"error":"Note not found"}`); a `1;DROP TABLE notes;` payload in `title`/`content` was stored as literal text and did not alter the schema (verified by the following list still containing the row).
+- **SQL injection:** All identifiers/parameters are passed as bound placeholders (`?`). Verified: `GET /medications/1%20OR%201%3D1` returns `404` (`{"error":"Medication not found"}`); a `1;DROP TABLE medications;` payload in `title`/`content` was stored as literal text and did not alter the schema (verified by the following list still containing the row).
 - **Path traversal in static file serving:** blocked by `path.normalize` + `startsWith` containment (see SEC-04 evidence).
-- **XSS:** No `dangerouslySetInnerHTML`, `innerHTML`, `eval`, or `child_process`/`require` appears anywhere in `src/` or `web/src/` (verified by grep). Note `title`/`content` are rendered as React text nodes, which auto-escape; therefore note content is not directly exploitable via the UI.
-- **No secrets committed:** `notes.db` (runtime data) is gitignored, and there is no `.env` or credential file in the repo.
+- **XSS:** No `dangerouslySetInnerHTML`, `innerHTML`, `eval`, or `child_process`/`require` appears anywhere in `src/` or `web/src/` (verified by grep). medication `title`/`content` are rendered as React text nodes, which auto-escape; therefore medication content is not directly exploitable via the UI.
+- **No secrets committed:** `medications.db` (runtime data) is gitignored, and there is no `.env` or credential file in the repo.
 - **Build integrity:** `npm run build` (tsc) completes cleanly (exit 0), and the server starts and serves the API and UI as expected.
 
 ## Recommendations (priority order)
@@ -104,7 +104,7 @@ However, the guard relies on the normalize/`startsWith` check only; it does not 
 2. **SEC-02 (Low):** Add TLS (via reverse proxy) before exposing the service over the network.
 3. **SEC-03 (Low):** Add security response headers (CSP, `X-Content-Type-Options: nosniff`, etc.) as a middleware.
 4. **SEC-04 (Low):** Strengthen the static handler (symlink handling, explicit allowlist) — currently traversal is already blocked.
-5. **SEC-05/SEC-06 (Info):** Add optional body-size limits and, for hardening, sanitization/length caps on note fields.
+5. **SEC-05/SEC-06 (Info):** Add optional body-size limits and, for hardening, sanitization/length caps on medication fields.
 
 ## Conclusion
 
