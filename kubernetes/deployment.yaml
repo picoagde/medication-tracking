@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: medication-tracker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: medication-tracker
+  template:
+    metadata:
+      labels:
+        app: medication-tracker
+    spec:
+      containers:
+      - name: api
+        image: medication-tracker:latest
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: PORT
+          value: "3000"
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"

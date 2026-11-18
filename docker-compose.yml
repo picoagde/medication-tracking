@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  medication-tracker:
+    build: .
+    container_name: medication-tracker
+    ports:
+      - "3000:3000"
+    restart: unless-stopped

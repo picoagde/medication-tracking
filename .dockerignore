@@ -6,7 +6,7 @@ dist
 web/dist
 
 # Local runtime/data files
-notes.db
+medications.db
 
 # Version control
 .git
