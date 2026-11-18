@@ -138,11 +138,15 @@ export default function App() {
         ) : loadError ? (
           <p className="error">{loadError}</p>
         ) : medications.length === 0 ? (
-          <p className="empty">No medications yet — add your first one above.</p>
+          <div className="empty">
+            <span className="empty__icon">💊</span>
+            <p className="empty__title">No medications yet</p>
+            <p className="empty__subtitle">Add your first medication above to get started.</p>
+          </div>
         ) : (
           <ul className="med-list">
             {medications.map((med) => (
-              <li key={med.id} className="med-item">
+              <li key={med.id} className="med-list__item">
                 <MedicationItem medication={med} onChanged={() => void refresh()} />
               </li>
             ))}

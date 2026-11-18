@@ -71,6 +71,15 @@ export function MedicationItem({ medication, onChanged }: MedicationItemProps) {
 
   const formatValue = (value: string | null): string => (value === null ? '' : value);
 
+  const fields = [
+    { label: 'Dosage', value: medication.dosage },
+    { label: 'Form', value: medication.form },
+    { label: 'Frequency', value: medication.frequency },
+    { label: 'Schedule', value: medication.schedule },
+    { label: 'Instructions', value: medication.instructions },
+    { label: 'Notes', value: medication.notes },
+  ].filter((field) => field.value && field.value.trim() !== '');
+
   if (editing) {
     return (
       <div className="med-item">
@@ -139,17 +148,23 @@ export function MedicationItem({ medication, onChanged }: MedicationItemProps) {
   return (
     <div className="med-item">
       <div className="med-item__text">
-        <div className="med-item__name">{medication.name}</div>
-        <div className="med-item__details">
-          <span>Dosage: {formatValue(medication.dosage)}</span>
-          <span>Form: {formatValue(medication.form)}</span>
-          <span>Frequency: {formatValue(medication.frequency)}</span>
-          <span>Schedule: {formatValue(medication.schedule)}</span>
-          <span>
-            Instructions: {formatValue(medication.instructions)}
-          </span>
-          <span>Notes: {formatValue(medication.notes)}</span>
+        <div className="med-item__name">
+          <span>{medication.name}</span>
+          {medication.dosage && <span className="med-item__badge">{medication.dosage}</span>}
         </div>
+        {fields.length > 0 ? (
+          <div className="med-item__details">
+            {fields.map((field) => (
+              <span key={field.label}>
+                <strong>{field.label}:</strong> {formatValue(field.value)}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <div className="med-item__details med-item__details--muted">
+            No additional details
+          </div>
+        )}
       </div>
       <div className="med-item__actions">
         <button type="button" className="btn" onClick={startEdit}>
