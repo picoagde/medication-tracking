@@ -82,58 +82,110 @@ export function MedicationItem({ medication, onChanged }: MedicationItemProps) {
 
   if (editing) {
     return (
-      <div className="med-item">
+      <div className="med-item med-item--editing">
         <div className="med-edit">
-          <input
-            className="med-edit__name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            maxLength={120}
-          />
-          <input
-            className="med-edit__dosage"
-            type="text"
-            value={dosage}
-            onChange={(e) => setDosage(e.target.value)}
-            maxLength={200}
-          />
-          <input
-            className="med-edit__form"
-            type="text"
-            value={form}
-            onChange={(e) => setForm(e.target.value)}
-            maxLength={80}
-          />
-          <input
-            className="med-edit__frequency"
-            type="text"
-            value={frequency}
-            onChange={(e) => setFrequency(e.target.value)}
-            maxLength={120}
-          />
-          <input
-            className="med-edit__schedule"
-            type="text"
-            value={schedule}
-            onChange={(e) => setSchedule(e.target.value)}
-            maxLength={200}
-          />
-          <textarea
-            className="med-edit__instructions"
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
-            maxLength={500}
-          />
-          <textarea
-            className="med-edit__notes"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            maxLength={2000}
-          />
-          {error && <p className="error">{error}</p>}
+          <div className="med-edit__field med-edit__field--full">
+            <label className="med-edit__label" htmlFor={`med-edit-name-${medication.id}`}>
+              Medication name
+            </label>
+            <input
+              className="med-edit__name"
+              id={`med-edit-name-${medication.id}`}
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={120}
+            />
+          </div>
+
+          <div className="med-edit__row">
+            <div className="med-edit__field">
+              <label className="med-edit__label" htmlFor={`med-edit-dosage-${medication.id}`}>
+                Dosage
+              </label>
+              <input
+                className="med-edit__dosage"
+                id={`med-edit-dosage-${medication.id}`}
+                type="text"
+                value={dosage}
+                onChange={(e) => setDosage(e.target.value)}
+                maxLength={200}
+              />
+            </div>
+            <div className="med-edit__field">
+              <label className="med-edit__label" htmlFor={`med-edit-form-${medication.id}`}>
+                Form
+              </label>
+              <input
+                className="med-edit__form"
+                id={`med-edit-form-${medication.id}`}
+                type="text"
+                value={form}
+                onChange={(e) => setForm(e.target.value)}
+                maxLength={80}
+              />
+            </div>
+          </div>
+
+          <div className="med-edit__row">
+            <div className="med-edit__field">
+              <label className="med-edit__label" htmlFor={`med-edit-frequency-${medication.id}`}>
+                Frequency
+              </label>
+              <input
+                className="med-edit__frequency"
+                id={`med-edit-frequency-${medication.id}`}
+                type="text"
+                value={frequency}
+                onChange={(e) => setFrequency(e.target.value)}
+                maxLength={120}
+              />
+            </div>
+            <div className="med-edit__field">
+              <label className="med-edit__label" htmlFor={`med-edit-schedule-${medication.id}`}>
+                Schedule
+              </label>
+              <input
+                className="med-edit__schedule"
+                id={`med-edit-schedule-${medication.id}`}
+                type="text"
+                value={schedule}
+                onChange={(e) => setSchedule(e.target.value)}
+                maxLength={200}
+              />
+            </div>
+          </div>
+
+          <div className="med-edit__field med-edit__field--full">
+            <label className="med-edit__label" htmlFor={`med-edit-instructions-${medication.id}`}>
+              Instructions
+            </label>
+            <textarea
+              className="med-edit__instructions"
+              id={`med-edit-instructions-${medication.id}`}
+              value={instructions}
+              onChange={(e) => setInstructions(e.target.value)}
+              maxLength={500}
+            />
+          </div>
+
+          <div className="med-edit__field med-edit__field--full">
+            <label className="med-edit__label" htmlFor={`med-edit-notes-${medication.id}`}>
+              Notes
+            </label>
+            <textarea
+              className="med-edit__notes"
+              id={`med-edit-notes-${medication.id}`}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              maxLength={2000}
+            />
+          </div>
+
+          {error && <p className="error med-edit__error">{error}</p>}
+
           <div className="med-edit__actions">
-            <button type="button" className="btn" onClick={cancelEdit} disabled={saving}>
+            <button type="button" className="btn btn--ghost" onClick={cancelEdit} disabled={saving}>
               Cancel
             </button>
             <button type="button" className="btn btn--primary" onClick={saveEdit} disabled={saving}>
@@ -149,13 +201,13 @@ export function MedicationItem({ medication, onChanged }: MedicationItemProps) {
     <div className="med-item">
       <div className="med-item__text">
         <div className="med-item__name">
-          <span>{medication.name}</span>
+          <span className="med-item__name-text">{medication.name}</span>
           {medication.dosage && <span className="med-item__badge">{medication.dosage}</span>}
         </div>
         {fields.length > 0 ? (
           <div className="med-item__details">
             {fields.map((field) => (
-              <span key={field.label}>
+              <span key={field.label} className="med-item__detail">
                 <strong>{field.label}:</strong> {formatValue(field.value)}
               </span>
             ))}
@@ -167,7 +219,7 @@ export function MedicationItem({ medication, onChanged }: MedicationItemProps) {
         )}
       </div>
       <div className="med-item__actions">
-        <button type="button" className="btn" onClick={startEdit}>
+        <button type="button" className="btn btn--ghost" onClick={startEdit}>
           Edit
         </button>
         <button type="button" className="btn btn--danger" onClick={removeMedication}>
